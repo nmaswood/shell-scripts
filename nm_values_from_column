@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+from dataclasses import dataclass
+
+import pandas as pd
+
+
+@dataclass
+class Arguments():
+    excel_file: str
+    sheet_name: str
+    column_name: str
+
+    output_file: str
+
+
+def main():
+    args = parse_args()
+    write_column(args)
+
+
+def write_column(args: Arguments):
+    df = pd.read_excel(args.excel_file,
+                       sheet_name=args.sheet_name)[args.column_name]
+    values = list(df)
+    with open(args.output_file, 'w') as outfile:
+        json.dump(values, outfile)
+
+
+def parse_args() -> Arguments:
+    parser = argparse.ArgumentParser(
+        description='Fetch values from the column of an excel file')
+    parser.add_argument('--excel-file',
+                        type=str,
+                        required=True,
+                        help='Path to excel file')
+    parser.add_argument('--sheet-name',
+                        type=str,
+                        required=True,
+                        help='name of sheet')
+    parser.add_argument('--column-name',
+                        type=str,
+                        required=True,
+                        help='desired column name')
+    parser.add_argument('--output-file',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    args = parser.parse_args()
+    return Arguments(args.excel_file, args.sheet_name, args.column_name,
+                     args.output_file)
+
+
+main()

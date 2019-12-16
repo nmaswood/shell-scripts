@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import os
+from dataclasses import dataclass
+
+
+@dataclass
+class Arguments():
+    input_dir: str
+    output_file: str
+
+
+def main():
+    args = parse_args()
+    write_ls(args)
+
+
+def write_ls(args: Arguments):
+    src = os.path.abspath(args.input_dir)
+    dst = os.path.abspath(args.output_file)
+
+    files = os.listdir(src)
+    with open(dst, 'w') as outfile:
+        json.dump(files, outfile, indent=4)
+
+
+def parse_args() -> Arguments:
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--input-dir',
+                        type=str,
+                        required=True,
+                        help='Name of input directory')
+    parser.add_argument('--output-file',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    args = parser.parse_args()
+    return Arguments(args.input_dir, args.output_file)
+
+
+main()

@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+from dataclasses import dataclass
+
+
+@dataclass
+class Arguments():
+    one: str
+    two: str
+    output_file: str
+
+
+def main():
+    args = parse_args()
+    diff(args)
+
+
+def diff(args: Arguments):
+    with open(args.one, 'r') as infile:
+        one_values = set(json.load(infile))
+
+    with open(args.two, 'r') as infile:
+        two_values = set(json.load(infile))
+
+    diff_values = sorted(one_values - two_values)
+
+    with open(args.output_file, 'w') as outfile:
+        json.dump(diff_values, outfile, indent=4)
+
+
+def parse_args() -> Arguments:
+    parser = argparse.ArgumentParser(
+        description='Fetch values from the column of an excel file')
+    parser.add_argument('--one',
+                        type=str,
+                        required=True,
+                        help='first file to compare')
+    parser.add_argument('--two',
+                        type=str,
+                        required=True,
+                        help='second file to compare')
+    parser.add_argument('--output-file',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    args = parser.parse_args()
+    return Arguments(args.one, args.two, args.output_file)
+
+
+main()

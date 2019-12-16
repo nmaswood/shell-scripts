@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+from dataclasses import dataclass
+
+import pandas as pd
+
+
+@dataclass
+class Arguments():
+    excel_file: str
+    sheet_name: str
+    column_name: str
+
+    map_location: str
+
+    output_file_present: str
+    output_file_not_present: str
+
+
+def main():
+    args = parse_args()
+    write_column(args)
+
+
+def write_column(args: Arguments):
+    df = pd.read_excel(args.excel_file, sheet_name=args.sheet_name)
+
+    with open(args.map_location, 'r') as infile:
+        mapping = json.load(infile)
+
+    df_present = df[df[args.column_name].isin(mapping)]
+    df_present[f"{args.column_name}-mapped"] = df_present[
+        args.column_name].apply(lambda x: mapping[x])
+    df_not_present = df[~df[args.column_name].isin(mapping)]
+
+    df_present.to_excel(args.output_file_present)
+    df_not_present.to_excel(args.output_file_not_present)
+
+
+def parse_args() -> Arguments:
+    parser = argparse.ArgumentParser(
+        description='Fetch values from the column of an excel file')
+    parser.add_argument('--excel-file',
+                        type=str,
+                        required=True,
+                        help='Path to excel file')
+    parser.add_argument('--sheet-name',
+                        type=str,
+                        required=True,
+                        help='name of sheet')
+    parser.add_argument('--column-name',
+                        type=str,
+                        required=True,
+                        help='desired column name')
+    parser.add_argument('--map-location',
+                        type=str,
+                        required=True,
+                        help='desired column name')
+    parser.add_argument('--output-file-present',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    parser.add_argument('--output-file-not-present',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    args = parser.parse_args()
+    return Arguments(args.excel_file, args.sheet_name, args.column_name,
+                     args.map_location, args.output_file_present,
+                     args.output_file_not_present)
+
+
+main()

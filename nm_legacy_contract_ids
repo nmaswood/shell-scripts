@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import argparse
+import datetime
+import json
+from dataclasses import dataclass
+
+
+@dataclass
+class Arguments():
+    start: int
+    end: int
+    output_file: str
+
+
+def main():
+    args = parse_args()
+    generate_ids(args)
+
+
+def generate_ids(args: Arguments):
+    prefix = datetime.date.today().strftime("%m/%y")
+    values = [f"{prefix}:{i}" for i in range(args.start, args.end)]
+    with open(args.output_file, 'w') as outfile:
+        json.dump(values, outfile)
+
+
+def parse_args() -> Arguments:
+    parser = argparse.ArgumentParser(
+        description='Fetch values from the column of an excel file')
+    parser.add_argument('--start',
+                        type=int,
+                        required=True,
+                        help='Starting index')
+    parser.add_argument('--end', type=int, required=True, help='Ending index')
+    parser.add_argument('--output-file',
+                        type=str,
+                        required=True,
+                        help='Name of output file')
+    args = parser.parse_args()
+    return Arguments(args.start, args.end, args.output_file)
+
+
+main()
