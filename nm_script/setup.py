@@ -10,7 +10,7 @@ DEV_PACKAGES: List[str] = [
 version = '0.0.1'
 
 setup(
-    name='nm_py_scripting',
+    name='nm_script',
     version=version,
     install_requires=REQUIRED_PACKAGES,
     packages=find_packages(),

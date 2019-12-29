@@ -2,44 +2,40 @@
 
 import argparse
 import json
+import pprint
+import sys
 from collections import Counter
 from dataclasses import dataclass
+
+pp = pprint.PrettyPrinter(indent=4)
+
+LIMIT = 50
 
 
 @dataclass
 class Arguments():
-    input_file: str
-    output_file: str
+    n: int
 
 
 def main():
-    args = parse_args()
-    count(args)
-
-
-def count(args: Arguments):
-    with open(args.input_file, 'r') as infile:
-        values = dict(Counter(json.load(infile)))
-
-    with open(args.output_file, 'w') as outfile:
-        json.dump(values, outfile)
+    lines = [line.strip() for line in sys.stdin.readlines()]
+    arguments = parse_args()
+    values = Counter(lines).most_common(arguments.n)
+    pp.pprint(values)
 
 
 def parse_args() -> Arguments:
     parser = argparse.ArgumentParser(
-        description='Run counter on a list of values')
+        description='Get n most common from a list of values')
+    parser.add_argument('--n',
+                        type=int,
+                        required=False,
+                        default=LIMIT,
+                        help='k most common')
 
-    parser.add_argument('--input-file',
-                        type=str,
-                        required=True,
-                        help='Name of input file')
-
-    parser.add_argument('--output-file',
-                        type=str,
-                        required=True,
-                        help='Name of output file')
     args = parser.parse_args()
-    return Arguments(args.input_file, args.output_file)
+
+    return Arguments(args.n)
 
 
 main()
