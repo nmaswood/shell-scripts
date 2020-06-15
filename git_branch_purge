@@ -2,9 +2,7 @@
 
 import subprocess
 
-from nm_py_scripting import user_input
-
-breakpoint()
+from nm_script import user_input
 
 
 def main():
@@ -12,7 +10,7 @@ def main():
     as_string = result.stdout.decode('utf-8').strip().splitlines()
     branches = [x.lstrip("*").strip() for x in as_string]
     for branch in branches:
-        if user_input.yes(f"Delete {branch}?\n"):
+        if user_input.is_yes(f"Delete {branch}?\n"):
             subprocess.run(['git', 'branch', '-D', branch])
 
 

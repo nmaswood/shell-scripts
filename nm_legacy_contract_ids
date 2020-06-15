@@ -10,7 +10,6 @@ from dataclasses import dataclass
 class Arguments():
     start: int
     end: int
-    output_file: str
 
 
 def main():
@@ -21,8 +20,7 @@ def main():
 def generate_ids(args: Arguments):
     prefix = datetime.date.today().strftime("%m/%y")
     values = [f"{prefix}:{i}" for i in range(args.start, args.end)]
-    with open(args.output_file, 'w') as outfile:
-        json.dump(values, outfile)
+    print(json.dumps(values))
 
 
 def parse_args() -> Arguments:
@@ -33,12 +31,8 @@ def parse_args() -> Arguments:
                         required=True,
                         help='Starting index')
     parser.add_argument('--end', type=int, required=True, help='Ending index')
-    parser.add_argument('--output-file',
-                        type=str,
-                        required=True,
-                        help='Name of output file')
     args = parser.parse_args()
-    return Arguments(args.start, args.end, args.output_file)
+    return Arguments(args.start, args.end)
 
 
 main()

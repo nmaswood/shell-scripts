@@ -9,7 +9,6 @@ from dataclasses import dataclass
 class Arguments():
     one: str
     two: str
-    output_file: str
 
 
 def main():
@@ -26,8 +25,7 @@ def diff(args: Arguments):
 
     diff_values = sorted(one_values - two_values)
 
-    with open(args.output_file, 'w') as outfile:
-        json.dump(diff_values, outfile, indent=4)
+    print(json.dumps(diff_values, indent=4))
 
 
 def parse_args() -> Arguments:
@@ -41,12 +39,9 @@ def parse_args() -> Arguments:
                         type=str,
                         required=True,
                         help='second file to compare')
-    parser.add_argument('--output-file',
-                        type=str,
-                        required=True,
-                        help='Name of output file')
+
     args = parser.parse_args()
-    return Arguments(args.one, args.two, args.output_file)
+    return Arguments(args.one, args.two)
 
 
 main()
